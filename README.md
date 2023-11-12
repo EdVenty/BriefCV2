@@ -1,12 +1,10 @@
 # Brief OpenCV/CV2
-```python
-cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[0]
+`cv2.findContours(img, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[0]`
 
-|
-V
+V V V
+ 
+`cv2.fc(img)`
 
-cv2.fc(img)
-```
 ## Shortify your code & develop faster
 
 Long CV2 commands can really tire you out. Write less code to get more result.
@@ -62,7 +60,7 @@ using(n.thresh, n.morph)
 using(*n.all)
 ```
 
-See through using examples:
+See through usage examples:
 
 ```python
 using(n.color)
@@ -82,6 +80,43 @@ using(n.contour)
 cv2.fc_nonapprox(bin) # cv2.findContours(bin, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[0]
 ``` 
 
+## Create your own namespaces
+
+### Example: Custom colors
+
+```python
+from brief_cv2 import using, create_namespace
+
+namespace_custom_colors = lambda: create_namespace({ # Create new namespace for your own colors
+    "pink": (255, 110, 110)[::-1], # convert from RGB to BGR
+    "cyan": (10, 255, 255)[::-1]
+})
+
+using(namespace_custom_colors)
+
+img = np.ones((100, 100, 3), np.uint8) * 255
+cv2.circle(img, (50, 50), 20, cv2.pink, -1) # use alias
+cv2.circle(img, (50, 50), 10, cv2.cyan, -1) # use alias
+```
+
+### Example: Custom Gaussian aliases
+
+```python
+namespace_custom_preprocessing = lambda: create_namespace({
+    "gauss_s": lambda img: cv2.GaussianBlur(img, (3, 3), cv2.BORDER_DEFAULT),
+    "gauss_m": lambda img: cv2.GaussianBlur(img, (7, 7), cv2.BORDER_DEFAULT),
+    "gauss_l": lambda img: cv2.GaussianBlur(img, (21, 21), cv2.BORDER_DEFAULT),
+})
+
+using(namespace_custom_preprocessing)
+
+dst_s = cv2.gauss_s(img)
+dst_m = cv2.gauss_m(img)
+dst_l = cv2.gauss_l(img)
+```
+
+Full examples can be viewed in examples folder.
+
 ## And auxiliary `builtins` function
 
 ```python
@@ -97,3 +132,13 @@ min_area = min_key(cnts, cv2.contourArea)
 min_area = cv2.contourArea(min(cnts, cv2.contourArea))
 ...
 ```
+
+# Docs
+
+- `using ( * namespaces : Namespace ) -> None` - activate aliases in Namespace.
+
+- `create_namespace ( attrs_dict : dict[ str, function | Any ] ) -> Namespace` - create new custom namespace. Returns new Namespace. See using examples below.
+
+- `Namespaces : class[ list of Namespace ]` - default namespaces in BriefCV2 lib.
+
+- `Namespace : () -> list[ DictItem[ str, function | Any ] ]` - Namespace defenition. Namespace is an array of cv2 function aliases (but you can write whatever you want in it).

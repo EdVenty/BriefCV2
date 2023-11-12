@@ -1,6 +1,6 @@
 import cv2
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict
 import functools
 import hashlib
 from numpy import ndarray
@@ -60,6 +60,11 @@ namespace_cache = lambda: [
         "contourArea": lambda arr: functools.lru_cache()(cv2.contourArea)(HashableNDArrayContainer(arr)).ndarray
     }.items()
 ]
+
+def create_namespace(attributes_dict: Dict):
+    return [
+        *attributes_dict.items()
+    ]
 
 class Namespaces:
     color = namespace_color
